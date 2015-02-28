@@ -2,18 +2,30 @@
 # https://github.com/em77
 
 continue = "y"
+bet = 0
+bankroll = 100
 holecard = 0
 upcard = 0
 playercard1 = 0
 playercard2 = 0
 player_ace_count = 0
 dealer_ace_count = 0
-deck = [2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7,8,8,8,8,9,9,9,9,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,11,11,11,11]
+deck = [2,2,2,2,
+				3,3,3,3,
+				4,4,4,4,
+				5,5,5,5,
+				6,6,6,6,
+				7,7,7,7,
+				8,8,8,8,
+				9,9,9,9,
+				10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+				11,11,11,11]
 cards = (deck * 2).shuffle
 player_hand = []
 dealer_hand = []
 
-puts "\nWelcome to Double-Deck Blackjack!\n\n"
+puts "\nWelcome to Double-Deck Blackjack!"
+puts "Minimum Bet: $5\n\n"
 sleep 1
 puts "We are just beginning a new deck."
 sleep 1
@@ -34,6 +46,16 @@ while continue == "y"
 		puts "One card burned...\n"
 		sleep 1
 	end
+
+	puts "\nCurrent bankroll: $#{bankroll}"
+	puts "\nEnter your bet amount: "
+	bet = gets.to_f
+	while (bet < 5) || (bet % 0.5 != 0)
+		puts "\nMinimum bet is $5 and smallest chip size is 50¢"
+		puts "\nEnter your bet amount: "
+		bet = gets.to_f
+	end
+
 	dealer_hand = []
 	player_hand = []
 	dealer_hand << (holecard = cards.delete_at(cards.count - 1))
@@ -55,11 +77,13 @@ while continue == "y"
 	if dealer_total == 21
 		sleep 1
 		puts "\nDealer has blackjack! The holecard was #{holecard}."
-		puts "You lost."
+		puts "You lost $#{bet}"
+		bankroll = bankroll - bet
 	elsif player_total == 21
 		sleep 1
 		puts "\nPlayer has blackjack! The holecard was #{holecard}."
-		puts "You won!"
+		puts "You won $#{bet*2}!"
+		bankroll = bankroll + (bet*2)
 	else
 		while player_total <= 20
 			if decision == "h"
@@ -103,7 +127,8 @@ while continue == "y"
 		if player_total > 21
 			sleep 1
 			puts "\nPlayer busted with #{player_total}"
-			puts "You lost."
+			puts "You lost $#{bet}"
+			bankroll = bankroll - bet
 		else
 			while dealer_total <= 16
 				dealercard = cards.delete_at(cards.count - 1)
@@ -131,12 +156,14 @@ while continue == "y"
 			if dealer_total > 21
 				sleep 1
 				puts "\nDealer busted with #{dealer_total} and the holecard was #{holecard}."
-				puts "You won!"
+				puts "You won $#{bet*2}!"
+				bankroll = bankroll + (bet*2)
 			elsif dealer_total > player_total
 				sleep 1
 				puts "\nPlayer hand: #{player_total}"
 				puts "Dealer won with #{dealer_total} and the holecard was #{holecard}."
-				puts "You lost."
+				puts "You lost $#{bet}"
+				bankroll = bankroll - bet
 			elsif dealer_total == player_total
 				sleep 1
 				puts "\nPlayer hand: #{player_total}"
@@ -150,11 +177,16 @@ while continue == "y"
 				sleep 1
 				puts "Dealer hand: #{dealer_total}"
 				sleep 1
-				puts "You won! The holecard was #{holecard}."
+				puts "You won $#{bet*2}! The holecard was #{holecard}."
+				bankroll = bankroll + (bet*2)
 			end
 		end
 	end
 	sleep 1
+	if bankroll <= 0.0
+		puts "\nYou've lost your entire bankroll!"
+		break
+	end
 	puts "\nWould you like to play again?\n\n"
 	puts "Type \"y\" to play again or anything else to exit the game."
 	continue = gets.chomp
