@@ -1,9 +1,15 @@
 # Double-Deck Blackjack in Ruby
 # https://github.com/em77
 
+class Float
+	def dec_drop
+		to_i == self ? to_i : self
+	end
+end
+
 continue = "y"
 bet = 0
-bankroll = 100
+bankroll = 100.0
 holecard = 0
 upcard = 0
 playercard1 = 0
@@ -35,6 +41,7 @@ sleep 1
 
 while continue == "y"
 	decision = "h"
+	round_counter = 0
 	player_ace_count = 0
 	dealer_ace_count = 0
 	if cards.count <= 11
@@ -47,7 +54,7 @@ while continue == "y"
 		sleep 1
 	end
 
-	puts "\nCurrent bankroll: $#{bankroll}"
+	puts "\nCurrent bankroll: $#{bankroll.dec_drop}"
 	puts "\nEnter your bet amount: "
 	bet = gets.to_f
 	while (bet < 5) || (bet % 0.5 != 0)
@@ -77,12 +84,12 @@ while continue == "y"
 	if dealer_total == 21
 		sleep 1
 		puts "\nDealer has blackjack! The holecard was #{holecard}."
-		puts "You lost $#{bet}"
+		puts "You lost $#{bet.dec_drop}"
 		bankroll = bankroll - bet
 	elsif player_total == 21
 		sleep 1
 		puts "\nPlayer has blackjack! The holecard was #{holecard}."
-		puts "You won $#{bet*2}!"
+		puts "You won $#{(bet*2).dec_drop}!"
 		bankroll = bankroll + (bet*2)
 	else
 		while player_total <= 20
@@ -97,9 +104,13 @@ while continue == "y"
 					puts "Player hand: #{player_total}"
 					sleep 1
 				end
-				puts "\nType \"h\" to hit and anything else to stand: "
+				if round_counter == 0
+					puts "\nType \"h\" to hit, \"d\" to double down and anything else to stand: "
+				else
+					puts "\nType \"h\" to hit and anything else to stand: "
+				end
 				decision = gets.chomp
-				if decision == "h"
+				if (decision == "h") || ((decision == "d") && (round_counter == 0))
 					playercard = cards.delete_at(cards.count - 1)
 					if (playercard == 11)
 						player_ace_count = player_ace_count + 1
@@ -119,6 +130,10 @@ while continue == "y"
 					end
 					player_hand << playercard
 					player_total = player_hand.inject(:+)
+					if decision == "d"
+						bet = bet*2
+					end
+					round_counter = round_counter + 1
 				end
 			else
 				break
@@ -127,7 +142,7 @@ while continue == "y"
 		if player_total > 21
 			sleep 1
 			puts "\nPlayer busted with #{player_total}"
-			puts "You lost $#{bet}"
+			puts "You lost $#{bet.dec_drop}"
 			bankroll = bankroll - bet
 		else
 			while dealer_total <= 16
@@ -156,13 +171,13 @@ while continue == "y"
 			if dealer_total > 21
 				sleep 1
 				puts "\nDealer busted with #{dealer_total} and the holecard was #{holecard}."
-				puts "You won $#{bet*2}!"
+				puts "You won $#{(bet*2).dec_drop}!"
 				bankroll = bankroll + (bet*2)
 			elsif dealer_total > player_total
 				sleep 1
 				puts "\nPlayer hand: #{player_total}"
 				puts "Dealer won with #{dealer_total} and the holecard was #{holecard}."
-				puts "You lost $#{bet}"
+				puts "You lost $#{bet.dec_drop}"
 				bankroll = bankroll - bet
 			elsif dealer_total == player_total
 				sleep 1
@@ -177,7 +192,7 @@ while continue == "y"
 				sleep 1
 				puts "Dealer hand: #{dealer_total}"
 				sleep 1
-				puts "You won $#{bet*2}! The holecard was #{holecard}."
+				puts "You won $#{(bet*2).dec_drop}! The holecard was #{holecard}."
 				bankroll = bankroll + (bet*2)
 			end
 		end
