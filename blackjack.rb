@@ -24,7 +24,10 @@ deck = [2,2,2,2,
 				7,7,7,7,
 				8,8,8,8,
 				9,9,9,9,
-				10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+				10,10,10,10,  # 10s
+				10,10,10,10,  # Jacks
+				10,10,10,10,  # Queens
+				10,10,10,10,  # Kings
 				11,11,11,11]
 cards = (deck * 2).shuffle
 player_hand = []
@@ -55,12 +58,14 @@ while continue == "y"
 	end
 
 	puts "\nCurrent bankroll: $#{bankroll.dec_drop}"
-	puts "\nEnter your bet amount: "
+	print "\nEnter your bet amount: "
 	bet = gets.to_f
+	print "\n"
 	while (bet < 5) || (bet % 0.5 != 0)
 		puts "\nMinimum bet is $5 and smallest chip size is 50¢"
-		puts "\nEnter your bet amount: "
+		print "\nEnter your bet amount: "
 		bet = gets.to_f
+		print "\n"
 	end
 
 	dealer_hand = []
@@ -105,11 +110,20 @@ while continue == "y"
 					sleep 1
 				end
 				if round_counter == 0
-					puts "\nType \"h\" to hit, \"d\" to double down and anything else to stand: "
+					print "\nType \"h\" to hit, \"d\" to double down, \"s\" to stand and \"sur\" to surrender: "
 				else
-					puts "\nType \"h\" to hit and anything else to stand: "
+					print "\nType \"h\" to hit and \"s\" to stand: "
 				end
 				decision = gets.chomp
+				while (["h", "d", "s", "sur"].include? decision) == false
+					print "\nThat is not a valid choice. Enter \"h,\" \"d,\" \"s\" or \"sur\": "
+					decision = gets.chomp
+				end
+				while (decision == "d") && (bankroll < (bet*2))
+					puts "\nYou don't have enough money to double down."
+					print "\nPlease enter \"h,\" \"s\" or \"sur\": "
+					decision = gets.chomp
+				end
 				if (decision == "h") || ((decision == "d") && (round_counter == 0))
 					playercard = cards.delete_at(cards.count - 1)
 					if (playercard == 11)
@@ -139,7 +153,11 @@ while continue == "y"
 				break
 			end
 		end
-		if player_total > 21
+		if decision == "sur"
+			puts "\nYou surrendered and #{bet/2} was returned to your bankroll."
+			puts "The holecard was #{holecard}"
+			bankroll = bankroll - (bet/2)
+		elsif player_total > 21
 			sleep 1
 			puts "\nPlayer busted with #{player_total}"
 			puts "You lost $#{bet.dec_drop}"
@@ -201,10 +219,14 @@ while continue == "y"
 	if bankroll <= 0.0
 		puts "\nYou've lost your entire bankroll!"
 		break
+	elsif bankroll < 5.0
+		puts "\nYou don't have enough money left to play at this table."
+		break
 	end
 	puts "\nWould you like to play again?\n\n"
-	puts "Type \"y\" to play again or anything else to exit the game."
+	print "Type \"y\" to play again or anything else to exit the game: "
 	continue = gets.chomp
+	print "\n"
 end
 
 puts "\nThank you for playing!\n\n"
