@@ -88,8 +88,8 @@ while continue == "y"
 	elsif player_total == 21
 		sleep 1
 		puts "\nPlayer has blackjack! The holecard was #{holecard[:name]}."
-		puts "You won $#{(bet*2.5).dec_drop}!"
-		bankroll = bankroll + (bet*2)
+		puts "You won $#{(bet*1.5).dec_drop}!"
+		bankroll = bankroll + (bet*1.5)
 	else
 		while player_total <= 20
 			if decision == "h"
@@ -213,8 +213,8 @@ while continue == "y"
 			puts "Dealer total: #{dealer_total}\n"
 			sleep 1
 			puts "\nDealer busted with #{dealer_total} and the holecard was #{holecard[:name]}."
-			puts "You won $#{(bet*2).dec_drop}!"
-			bankroll = bankroll + (bet*2)
+			puts "You won $#{bet.dec_drop}!"
+			bankroll = bankroll + bet
 		elsif dealer_total > player_total
 			sleep 1
 			card_names_p = (player_hand.map{|c| c[:name]})
@@ -249,8 +249,8 @@ while continue == "y"
 			puts "\nDealer hand: #{card_names_d.join(', ')}"
 			puts "Dealer total: #{dealer_total}\n"
 			sleep 1
-			puts "\nYou won $#{(bet*2).dec_drop}! The holecard was #{holecard[:name]}."
-			bankroll = bankroll + (bet*2)
+			puts "\nYou won $#{bet.dec_drop}! The holecard was #{holecard[:name]}."
+			bankroll = bankroll + bet
 		end
 	end
 	sleep 1
