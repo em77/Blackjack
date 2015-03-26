@@ -1,6 +1,6 @@
 # Double-Deck Blackjack in Ruby
 
-This is a Double-Deck Blackjack command-line based game written in Ruby. In terms of card handling and viewing, dealer actions, player actions, rules, shuffling, deck penetration, vulnerability to card counting and terminology, I have attempted to mirror a real blackjack game as realistically as possible. It may not look very pretty, but it should work as it's intended. Right now, the code is not very well designed and may appear a bit convoluted to more experienced programmers. I am in the process of learning Ruby as well as proper coding practices. Thus, I plan to re-factor this project soon, possibility add more features and look into deploying it graphically in a web environment.
+This is a Double-Deck Blackjack command-line based game written in Ruby. In terms of card handling and viewing, dealer actions, player actions, rules, shuffling, deck penetration, vulnerability to card counting and terminology, I have attempted to mirror a real blackjack game as realistically as possible. It may not look very pretty, but it should work as it's intended. Right now, the code is not very well designed and may appear a bit convoluted to more experienced programmers. I am in the process of learning Ruby as well as proper coding practices. Thus, I plan to re-factor this project soon, possibly add more features and look into deploying it graphically in a web environment.
 
 Enjoy playing!
 
