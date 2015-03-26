@@ -4,7 +4,7 @@ This is a Double-Deck Blackjack command-line based game written in Ruby. In term
 
 Enjoy playing!
 
-##-Specific Rules & Conditions-
+##Specific Rules & Conditions
 1. The game is double-deck, so it is played with 104 cards
 2. Dealer must draw on all 16's and stand on all 17's.
 3. Late surrender is available, meaning the player can "surrender" their first two cards and get half their bet back but only after the dealer has checked for a blackjack. This is only available on the first two cards and as such is not available after splitting.
