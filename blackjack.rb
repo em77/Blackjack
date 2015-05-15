@@ -13,7 +13,6 @@ end
 continue = "y"
 @decision = "h"
 @base_bet = 0
-@ace_count = 0
 @bankroll = 100.0
 @holecard = {}
 @upcard = {}
@@ -37,14 +36,11 @@ continue = "y"
 
 greeting
 
-@deck.each_index { |index| @cards[index] = @deck[index].dup }
-@deck.each_index { |index| @cards << @deck[index].dup }
+2.times {@deck.each_index { |index| @cards << @deck[index].dup }}
 @cards.shuffle!
 
 while continue == "y"
-	@ace_count = 0
 	card_shuffle
-
 	puts "\nCurrent bankroll: $#{@bankroll.dec_drop}"
 	print "\nEnter your bet amount: "
 	@base_bet = gets.to_f
@@ -56,6 +52,7 @@ while continue == "y"
 		@base_bet = gets.to_f
 		@current_bet = @base_bet
 	end
+	
 	@dealer_hand = []
 	@player_hand = []
 	@dealer_hand << (@holecard = @cards.delete_at(0))
@@ -73,7 +70,7 @@ while continue == "y"
 
 	if (@dealer_total == 21) && (@player_total == 21)
 		sleep 1
-		card_names_p = (hand.map{|c| c[:name]})
+		card_names_p = (@player_hand.map{|c| c[:name]})
 		card_names_d = (@dealer_hand.map{|c| c[:name]})
 		puts "\nPlayer hand: #{card_names_p.join(', ')}"
 		puts "Player total: #{@player_total}\n"

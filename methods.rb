@@ -280,7 +280,7 @@ end
 # Replenishes deck and shuffles cards if 15 or less cards are left
 def card_shuffle
 	if @cards.count <= 15
-		@deck.each_with_index { |item,index| @cards[index] = @deck[index].dup }
+		@deck.each_index { |index| @cards[index] = @deck[index].dup }
 		@deck.each_index { |index| @cards << deck[index].dup }
 		@cards.shuffle!
 		sleep 2
