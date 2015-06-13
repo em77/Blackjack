@@ -1,3 +1,6 @@
+# Multi-Deck Blackjack in Ruby
+# https://github.com/em77
+
 module Deck
 	CARDS = [
 						{:name => "2-h", :points => 2}, {:name => "2-d", :points => 2}, {:name => "2-s", :points => 2}, {:name => "2-c", :points => 2},
@@ -16,42 +19,81 @@ module Deck
 					]
 end
 
+########## For testing splitting
+# module Deck
+# 	CARDS = [
+# 						{:name => "4-h", :points => 4}, {:name => "4-d", :points => 4}, {:name => "4-s", :points => 4}, {:name => "4-c", :points => 4},
+# 						{:name => "4-h", :points => 4}, {:name => "4-d", :points => 4}, {:name => "4-s", :points => 4}, {:name => "4-c", :points => 4},
+# 						{:name => "4-h", :points => 4}, {:name => "4-d", :points => 4}, {:name => "4-s", :points => 4}, {:name => "4-c", :points => 4},
+# 						{:name => "4-h", :points => 4}, {:name => "4-d", :points => 4}, {:name => "4-s", :points => 4}, {:name => "4-c", :points => 4},
+# 						{:name => "4-h", :points => 4}, {:name => "4-d", :points => 4}, {:name => "4-s", :points => 4}, {:name => "4-c", :points => 4},
+# 						{:name => "4-h", :points => 4}, {:name => "4-d", :points => 4}, {:name => "4-s", :points => 4}, {:name => "4-c", :points => 4},
+# 						{:name => "4-h", :points => 4}, {:name => "4-d", :points => 4}, {:name => "4-s", :points => 4}, {:name => "4-c", :points => 4},
+# 						{:name => "4-h", :points => 4}, {:name => "4-d", :points => 4}, {:name => "4-s", :points => 4}, {:name => "4-c", :points => 4}
+# 					]
+# end
+
 class Shoe
-	extend Deck
-	attr_reader :cards
+	attr_reader :current_cards
 
 	def initialize(deck_num)
+		@current_cards = []
 		shuffle_up(deck_num)
 	end
 
 	def deal_card(hand)
-		hand << cards.delete_at(0)
+		hand.cards << @current_cards.delete_at(0)
+		hand.ace_check
 	end
 
 	def shuffle_up(deck_num)
-		@cards = []
-		deck_num.times {CARDS.each_index {|index| @cards << CARDS[index].dup} }
-		@cards.shuffle!
+		@current_cards = []
+		deck_num.times {Deck::CARDS.each_index {|index| @current_cards << Deck::CARDS[index].dup} }
+		@current_cards.shuffle!
+		Message::shuffle_message
 		# Burning one card at start of shoe
-		cards.delete_at(0)
+		@current_cards.delete_at(0)
 	end
 end
 
 class Player
-	attr_accessor :bankroll, :player_name
+	attr_accessor :bankroll, :name, :hands
 
 	def initialize(player_name)
 		@bankroll = 100.0
-		@player_name = player_name
+		@name = player_name
+		@hands = []
+	end
+
+	def enough_in_bankroll?(bet, decision)
+		case decision
+		when "d","sp"
+			if bankroll >= bet
+				return true
+			else
+				return false
+			end
+		end
+		true
+	end
+
+	def broke?
+		bankroll < 5.0
+	end
+
+	def there_are_split_hands?
+		hands.count > 1
 	end
 end
 
 class Hand
-	attr_accessor :cards, :bet
+	attr_accessor :cards, :bet, :has_been_played
 
 	def initialize
 		@cards = []
-		@bet = []
+		@bet = 0.0
+		@has_been_played = false
+		(yield.hands << self) if block_given?
 	end
 
 	# Finds first index of 11 in hand. If an 11 is present, hand is "soft" as the 11 can change to 1
@@ -61,6 +103,10 @@ class Hand
 
 	def total
 		cards.reduce(0) {|total,c| total + c[:points]}
+	end
+
+	def busted?
+		total > 21
 	end
 
 	def ace_check
