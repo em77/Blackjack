@@ -5,37 +5,23 @@ module Prompt
 
 	# Display current bankroll and receives bet choice from user
 	def self.bet_prompt(player, hand)
-		while (hand.bet < 5) || (hand.bet % 0.5 != 0) || (hand.bet >= player.bankroll)
-			Display::current_bankroll(player)
-			puts "\nMinimum bet is $5 and smallest chip size is 50¢"
-			print "\nEnter your bet amount: "
-			hand.bet = gets.to_f
-		end
+		Display::current_bankroll(player)
+		puts "\nMinimum bet is $5 and smallest chip size is 50¢"
+		print "\nEnter your bet amount: "
+		hand.bet = gets.to_f
 	end
 
-	# Displays general blackjack moves and the ones available to the user, then prompts for input. Returns decision.
+	# Prompts user for decision. Returns input.
 	def self.decision_prompt(choices)
-		decision = nil
-		puts "\nBlackjack moves: \"h\" to hit - \"d\" to double down - \"s\" to stand - \"sp\" to split - \"sur\" to surrender"
-		puts "In order to split or double down, you must have at least double your original bet in your bankroll."
-		until choices.include? decision
-			print "\nChoose one of the following moves (#{choices.join(', ')}): "
-			decision = gets.chomp
-		end
-		decision
+		print "\nChoose one of the following moves (#{choices.join(', ')}): "
+		gets.chomp
 	end
 
-	# Prompt for deck choice and returns decision.
-	def self.deck_num_prompt
-		decision = 0
-		choices = [2,4,6,8]
-		puts "Welcome to Blackjack!"
+	# Prompt for deck choice and returns input.
+	def self.deck_num_prompt(choices)
 		puts "\nHow many decks would you like to play with?"
-		until choices.include? decision
-			print "Enter (#{choices.join(', ')}): "
-			decision = gets.chomp.to_i
-		end
-		decision
+		print "Enter (#{choices.join(', ')}): "
+		gets.chomp.to_i
 	end
 
 	# Prompts user for name and returns their input
@@ -54,9 +40,23 @@ end
 
 module Display
 
+	def self.separator
+		puts "____________________________________________________________\n"
+	end
+
+	def self.blackjack_moves
+		puts "\nBlackjack moves: \"h\" to hit - \"d\" to double down - \"s\" to stand - \"sp\" to split - \"sur\" to surrender"
+		puts "In order to split or double down, you must have at least double your original bet in your bankroll."
+	end
+
+	# Takes in number and returns string formatted as dollars and cents (e.g. 10 becomes "$10.50")
+	def self.money_format(number)
+		"$#{"%.2f" % number}"
+	end
+
 	# Displays current bankroll
 	def self.current_bankroll(player)
-		puts "\nCurrent bankroll: $#{"%.2f" % player.bankroll}"
+		puts "\nCurrent bankroll: #{Display::money_format(player.bankroll)}"
 	end
 
 	# Displays cards of hand and total of hand
@@ -72,17 +72,22 @@ module Display
 		puts "\nDealer upcard: #{hand.cards[1][:name]}\n"
 	end
 
-	# Displays final cards/totals of dealer and player, who won, and how much money was lost or won by player
-	def self.display_final(player_hand, dealer_hand, hand_index, player_name)
+	# Display hand number
+	def self.display_hand_number(hand_index)
 		puts "\nHand ##{hand_index + 1}"
 		puts "______________"
+	end
+
+	# Displays final cards/totals of dealer and player, who won, and how much money was lost or won by player
+	def self.display_final(player_hand, dealer_hand, player_name, hand_index=nil)
+		display_hand_number(hand_index) if !hand_index.nil?
 		display_hand(player_hand, player_name)
 		sleep 1
 		display_hand(dealer_hand, "Dealer")
 		sleep 1
 		puts "The holecard was #{dealer_hand.cards[0][:name]}."
 		yield if block_given?
-		puts "____________________________________________________________\n"
+		separator
 	end
 end
 
@@ -117,28 +122,30 @@ module Message
 	end
 
 	def self.not_enough_money
-		puts "____________________________________________________________"
-		puts "\nYou don't have enough money to do that."
-		puts "____________________________________________________________"
+		Display::separator
+		puts "You don't have enough money to do that."
+		Display::separator
 	end
 end
 
 module Results
 
-	def self.player_has_blackjack(player)
-		puts "\n#{player.name} has blackjack!\n"
+	def self.player_has_blackjack(name, bet)
+		puts "\n#{name} has blackjack!\n"
+		player_won(name, bet)
 	end
 
-	def self.dealer_has_blackjack
+	def self.dealer_has_blackjack(name, bet)
 		puts "\nDealer has blackjack!\n"
+		dealer_won(name, bet)
 	end
 
 	def self.dealer_won(name, bet)
-		puts "\nDealer won. #{name} lost $#{"%.2f" % bet}.\n"
+		puts "\nDealer won. #{name} lost #{Display::money_format(bet)}.\n"
 	end
 
 	def self.player_won(name, bet)
-		puts "\nDealer lost. #{name} won $#{"%.2f" % bet}.\n"
+		puts "\nDealer lost. #{name} won #{Display::money_format(bet)}.\n"
 	end
 
 	def self.tie
@@ -146,6 +153,6 @@ module Results
 	end
 
 	def self.surrender(name, bet)
-		puts "\n#{name} surrendered and $#{"%.2f" % bet} was returned to your bankroll.\n"
+		puts "\n#{name} surrendered and #{Display::money_format(bet)} was returned to your bankroll.\n"
 	end
 end

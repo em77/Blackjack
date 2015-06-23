@@ -1,5 +1,5 @@
 # Multi-Deck Blackjack in Ruby
-# https://github.com/em77
+## https://github.com/em77
 
 This is a Multi-Deck Blackjack command-line based game written in Ruby. In terms of card handling and viewing, dealer actions, player actions, rules, shuffling, deck penetration, vulnerability to card counting and terminology, I have attempted to mirror a real blackjack game as realistically as possible. It may not look very pretty, but it should work as it's intended. I've recently re-designed the whole program along object-oriented and Model-View-Controller (MVC) design. I plan to tweak the coding design and implementation a bit more soon, possibly add more features and hope to deploy it graphically in a web environment.
 
